@@ -1,0 +1,61 @@
+[project]
+name = "taller1-g91"
+version = "1.0.0"
+description = "Taller 1 (Grupo 91) de la asignatura Programación 23200"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+license = { text = "MIT" }
+authors = [
+    { name = "Universitat de les Illes Balears" }
+]
+
+dependencies = [
+    "marimo>=0.16"
+]
+
+# El repositorio no es un paquete instalable: `uv sync` solo instala las
+# dependencias y no intenta construir el proyecto.
+[tool.uv]
+package = false
+
+###############################################################################
+# Dependency groups
+###############################################################################
+
+[dependency-groups]
+
+# Herramientas de desarrollo (se instalan con `uv sync`)
+dev = [
+    "ruff>=0.12",
+]
+
+###############################################################################
+# Marimo — autocompletado con GitHub Copilot dentro del editor de Marimo
+###############################################################################
+
+[tool.marimo.completion]
+activate_on_typing = true
+copilot = "github"
+
+###############################################################################
+# Ruff
+###############################################################################
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+# notebooks/ contiene prosa pedagógica (enunciados largos) y celdas de Marimo.
+extend-exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errores
+    "F",   # pyflakes
+    "I",   # isort
+    "W",   # pycodestyle advertencias
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
