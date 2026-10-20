@@ -15,18 +15,6 @@ def _(mo):
     mo.md(
         r"""
     # Taller 1 — 23200 Programación — 20/10/2026
-
-    ## Números amigos
-
-    **Instrucciones:**
-
-    - Sustituye el `pass` de cada función por tu implementación.
-    - Cada función debe incluir type hints y docstring, y lanzar `ValueError` con un
-      mensaje descriptivo si no se cumple alguna precondición.
-    - Debajo de cada función hay una celda con los ejemplos del enunciado. Compara
-      la salida de tu implementación con la salida esperada (indicada en los comentarios).
-    - **Se permite el uso de asistentes de IA** (GitHub Copilot u otros).
-    - Al terminar, guarda y sube tus cambios a tu repositorio (`commit` + `push`).
     """
     )
     return
@@ -36,7 +24,7 @@ def _(mo):
 def _(mo):
     mo.md(
         r"""
-    ## Inciso 1
+    # Problema 1
 
     Implementa la función `suma_divisores_propios(n: int) -> int`, que devuelve la suma
     de los divisores propios de `n` (los divisores positivos de `n` menores que `n`).
@@ -49,19 +37,27 @@ def _(mo):
 @app.cell
 def _():
     def suma_divisores_propios(n: int) -> int:
-        pass
+        """Devuelve la suma de los divisores positivos de n menores que n."""
+        if n < 1:
+            raise ValueError("n debe ser un entero positivo")
+
+        suma = 0
+        # Sumamos los números menores que n que lo dividen exactamente.
+        for divisor in range(1, n):
+            if n % divisor == 0:
+                suma += divisor
+        return suma
     return (suma_divisores_propios,)
 
 
 @app.cell
 def _(suma_divisores_propios):
-    print(suma_divisores_propios(1))     # 0     (1 no tiene divisores propios)
-    print(suma_divisores_propios(13))    # 1     (primo: solo el 1)
-    print(suma_divisores_propios(12))    # 16    (1 + 2 + 3 + 4 + 6)
-    print(suma_divisores_propios(28))    # 28    (1 + 2 + 4 + 7 + 14 → número perfecto)
-    print(suma_divisores_propios(220))   # 284   (1 + 2 + 4 + 5 + 10 + 11 + 20 + 22 + 44 + 55 + 110)
-    print(suma_divisores_propios(284))   # 220   (1 + 2 + 4 + 71 + 142)
-
+    print(suma_divisores_propios(1))     # 0
+    print(suma_divisores_propios(13))    # 1
+    print(suma_divisores_propios(12))    # 16
+    print(suma_divisores_propios(28))    # 28
+    print(suma_divisores_propios(220))   # 284
+    print(suma_divisores_propios(284))   # 220
     try:
         suma_divisores_propios(0)
     except ValueError as e:
@@ -73,7 +69,7 @@ def _(suma_divisores_propios):
 def _(mo):
     mo.md(
         r"""
-    ## Inciso 2
+    # Problema 2
 
     Implementa `son_amigos(a: int, b: int) -> bool`, reutilizando
     `suma_divisores_propios`. Dos números distintos $a \neq b$ son **amigos** si
@@ -85,19 +81,31 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(suma_divisores_propios):
     def son_amigos(a: int, b: int) -> bool:
-        pass
+        """Indica si a y b son distintos y cada uno suma el otro."""
+        if a < 1:
+            raise ValueError("a y b deben ser enteros positivos")
+        if b < 1:
+            raise ValueError("a y b deben ser enteros positivos")
+
+        # Un número no puede formar una pareja consigo mismo.
+        if a == b:
+            return False
+        # Comprobamos que cada número sea la suma de divisores del otro.
+        if suma_divisores_propios(a) == b and suma_divisores_propios(b) == a:
+            return True
+        return False
     return (son_amigos,)
 
 
 @app.cell
 def _(son_amigos):
     print(son_amigos(220, 284))     # True
-    print(son_amigos(284, 220))     # True   (la relación es simétrica)
+    print(son_amigos(284, 220))     # True
     print(son_amigos(1184, 1210))   # True
-    print(son_amigos(12, 16))       # False  (s(12) = 16, pero s(16) = 15 ≠ 12)
-    print(son_amigos(6, 6))         # False  (6 es perfecto: a = b no cuenta como par amigo)
+    print(son_amigos(12, 16))       # False
+    print(son_amigos(6, 6))         # False
     return
 
 
@@ -105,7 +113,7 @@ def _(son_amigos):
 def _(mo):
     mo.md(
         r"""
-    ## Inciso 3
+    # Problema 3
 
     Implementa `pares_amigos(limite: int) -> list[tuple[int, int]]`, que devuelve,
     ordenados por el primer elemento, todos los pares de números amigos $(a, b)$ con
@@ -120,15 +128,27 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(suma_divisores_propios):
     def pares_amigos(limite: int) -> list[tuple[int, int]]:
-        pass
+        """Devuelve los pares amigos a < b cuyos dos valores no superan limite."""
+        if limite < 1:
+            raise ValueError("limite debe ser un entero positivo")
+
+        pares = []
+        for a in range(1, limite + 1):
+            # La suma de divisores de a es el posible número amigo b.
+            b = suma_divisores_propios(a)
+            # Guardamos el par una sola vez y si b no supera el límite.
+            if b > a and b <= limite:
+                if suma_divisores_propios(b) == a:
+                    pares.append((a, b))
+        return pares
     return (pares_amigos,)
 
 
 @app.cell
 def _(pares_amigos):
-    print(pares_amigos(283))     # []  (284 queda fuera del límite)
+    print(pares_amigos(283))     # []
     print(pares_amigos(284))     # [(220, 284)]
     print(pares_amigos(1500))    # [(220, 284), (1184, 1210)]
     print(pares_amigos(10000))   # [(220, 284), (1184, 1210), (2620, 2924), (5020, 5564), (6232, 6368)]
@@ -139,7 +159,7 @@ def _(pares_amigos):
 def _(mo):
     mo.md(
         r"""
-    ## Inciso 4
+    # Problema 4
 
     Según la suma de sus divisores propios $s(n)$, todo entero positivo `n` es de uno
     de estos tres tipos:
@@ -159,9 +179,27 @@ def _(mo):
 
 
 @app.cell
-def _():
+def _(suma_divisores_propios):
     def agrupar_por_tipo(a: int, b: int) -> dict[str, list[int]]:
-        pass
+        """Agrupa en orden creciente los enteros de [a, b] según su tipo."""
+        if a < 1:
+            raise ValueError("se requiere que a y b sean enteros y 1 <= a <= b")
+        if b < 1:
+            raise ValueError("se requiere que a y b sean enteros y 1 <= a <= b")
+        if a > b:
+            raise ValueError("se requiere que a y b sean enteros y 1 <= a <= b")
+
+        # Creamos las tres listas aunque alguna quede vacía.
+        grupos = {"deficiente": [], "perfecto": [], "abundante": []}
+        for numero in range(a, b + 1):
+            suma = suma_divisores_propios(numero)
+            if suma < numero:
+                grupos["deficiente"].append(numero)
+            elif suma == numero:
+                grupos["perfecto"].append(numero)
+            else:
+                grupos["abundante"].append(numero)
+        return grupos
     return (agrupar_por_tipo,)
 
 
@@ -179,6 +217,7 @@ def _(agrupar_por_tipo):
     grupos = agrupar_por_tipo(1, 100)
     print({tipo: len(numeros) for tipo, numeros in grupos.items()})
     # {'deficiente': 76, 'perfecto': 2, 'abundante': 22}
+
     return
 
 
